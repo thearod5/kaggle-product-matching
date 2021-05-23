@@ -17,20 +17,20 @@ DATA CONSTANTS
 Y_COL = "class_label"
 
 
-def build_generator():
+def build_plain_generator():
     """
-    Creates ImageDataGenerator performing randome the data augmentations.
+    Creates ImageDataGenerator for serving plain image files
     """
     return ImageDataGenerator(
         featurewise_center=False,
-        samplewise_center=False,
+        samplewise_center=False,  # center images around 0
         featurewise_std_normalization=False,
         samplewise_std_normalization=False,
         zca_whitening=False,
-        zca_epsilon=1e-06,
-        rotation_range=15,
-        width_shift_range=5.0,
-        height_shift_range=5.0,
+        zca_epsilon=0,
+        rotation_range=0,
+        width_shift_range=0,
+        height_shift_range=0,
         brightness_range=None,
         shear_range=0.0,
         zoom_range=0.0,
@@ -46,17 +46,50 @@ def build_generator():
     )
 
 
+def build_augmentation_generator():
+    """
+    Creates ImageDataGenerator performing random the data augmentations.
+    """
+    return ImageDataGenerator(
+        featurewise_center=False,
+        samplewise_center=False,  # center images around 0
+        featurewise_std_normalization=False,
+        samplewise_std_normalization=False,
+        zca_whitening=False,
+        zca_epsilon=1e-06,
+        rotation_range=15,
+        width_shift_range=5.0,
+        height_shift_range=5.0,
+        brightness_range=None,
+        shear_range=15,
+        zoom_range=0.0,
+        channel_shift_range=0.0,
+        fill_mode="nearest",
+        cval=0.0,
+        horizontal_flip=True,
+        vertical_flip=True,
+        rescale=True,
+        preprocessing_function=None,
+        data_format=None,
+        dtype=None
+    )
+
+
 def create_df_generator(df,
                         col_name,
                         batch_size,
-                        image_size):
+                        image_size,
+                        use_plain_generator=False):
     """
     Creates DataFrameIterator that returns images from the column specified.
     : param: df - DataFrame containing image names
     : param: col_name - either [source_image] or [target_image]
     : returns: DataFrameIterator
     """
-    df_generator = build_generator()
+    if use_plain_generator:
+        df_generator = build_plain_generator()
+    else:
+        df_generator = build_augmentation_generator()
     df[Y_COL] = df[Y_COL].astype(str)
     return df_generator.flow_from_dataframe(
         df,
@@ -83,11 +116,12 @@ class CustomGen(tf.keras.utils.Sequence):
     def __init__(self, df,
                  shuffle=False,
                  batch_size=BATCH_SIZE,
-                 image_size=IMAGE_SIZE):
+                 image_size=IMAGE_SIZE,
+                 use_plain_generator=False):
         if shuffle:
             df = df.sample(frac=1)
-        self.source_gen = create_df_generator(df, "source_image", batch_size, image_size)
-        self.target_gen = create_df_generator(df, "target_image", batch_size, image_size)
+        self.source_gen = create_df_generator(df, "source_image", batch_size, image_size, use_plain_generator)
+        self.target_gen = create_df_generator(df, "target_image", batch_size, image_size, use_plain_generator)
         assert len(self.source_gen) == len(self.target_gen)
 
     def __len__(self):

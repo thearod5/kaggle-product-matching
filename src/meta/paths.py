@@ -1,3 +1,7 @@
+"""
+The following module is responsible for linking all paths in a cohesive way
+so that they can be easily imported anywhere
+"""
 import os
 
 PATH_TO_DATA = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "..", "data"))

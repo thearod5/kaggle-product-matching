@@ -1,8 +1,18 @@
+"""
+The following module is responsible for creating a siamese-based model that takes in two images
+and outputs single probability. Code is collected from https://keras.io/examples/vision/siamese_network/
+"""
+
 from keras.layers import Activation, BatchNormalization, Conv2D, Dense, Dropout, Flatten, Input, MaxPool2D, concatenate
 from keras.models import Model
 
 
 def create_feature_model(image_shape):
+    """
+    Responsible for creating a model to extract features from given input image.
+    :param image_shape: expecting (width, height, channel)
+    :return:
+    """
     img_in = Input(shape=image_shape, name='FeatureNet_ImageInput')
     n_layer = img_in
     for i in range(2):
@@ -23,6 +33,11 @@ def create_feature_model(image_shape):
 
 
 def create_model(image_shape):
+    """
+    Creates a two-image input model that outputs probability score that they are related
+    :param image_shape:
+    :return:
+    """
     img_a_in = Input(shape=image_shape, name='ImageA_Input')
     img_b_in = Input(shape=image_shape, name='ImageB_Input')
 

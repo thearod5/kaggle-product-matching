@@ -47,8 +47,7 @@ def get_index_of_image_type(df, image_type: str):
 
 def print_image_type(df, data_generator, image_type: str):
     batch_index, sample_index = get_index_of_image_type(df, image_type)
-    test_source, test_target, test_label = data_generator[batch_index]
-    print("Label:", test_label[sample_index])
+    [test_source, test_target], test_label = data_generator[batch_index]
     print_image_matrices((test_source[sample_index], test_target[sample_index]))
     return batch_index, sample_index
 
