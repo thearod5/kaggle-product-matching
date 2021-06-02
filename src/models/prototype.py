@@ -3,8 +3,8 @@ The following module is responsible for creating a siamese-based model that take
 and outputs single probability. Code is collected from https://keras.io/examples/vision/siamese_network/
 """
 
-from keras.layers import Activation, BatchNormalization, Conv2D, Dense, Dropout, Flatten, Input, MaxPool2D, concatenate
-from keras.models import Model
+from tensorflow.keras.layers import Activation, BatchNormalization, Conv2D, Dense, Dropout, Flatten, Input, MaxPool2D, concatenate
+from tensorflow.keras.models import Model
 
 
 def create_feature_model(image_shape):
