@@ -134,3 +134,4 @@ data/train_images/*
 /**/.ipynb_checkpoints
 .idea
 /**/.DS_Store
+data/train_images.zip
