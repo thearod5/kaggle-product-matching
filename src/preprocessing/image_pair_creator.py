@@ -111,17 +111,18 @@ def create_positive_pairs(image_df: pd.DataFrame,
     return positive_examples_df
 
 
-def train_test_split_no_stratification(x, y, percent):
+def train_test_split_no_stratification(x, test_frac):
     df = x.groupby(['label_group'])['label_group'].count().reset_index(name="label_group_count")
 
     groups = []
     sum = 0
     for i in df.sample(frac=1).iterrows():
-        if (sum + i[1]['label_group_count']) < (x.shape[0] * percent):
+        if (sum + i[1]['label_group_count']) < (x.shape[0] * test_frac):
             sum += i[1]['label_group_count']
             groups.append(i[1]['label_group'])
-        if sum >= (x.shape[0] * percent):
+        if sum >= (x.shape[0] * test_frac):
             break
-
-    return x[x['label_group'].isin(groups)], x[~x['label_group'].isin(groups)], \
-           y[y.isin(groups)], y[~y.isin(groups)]
+    
+    x_test = x[x['label_group'].isin(groups)]
+    x_train = x.drop(x_test.index)
+    return x_train, x_test
