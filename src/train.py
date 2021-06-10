@@ -16,7 +16,7 @@ from preprocessing.data_generator import CustomGen
 
 BATCH_SIZE = 32
 IMAGE_SIZE = (100, 100)
-EPOCHS = 100
+EPOCHS = 2
 
 if __name__ == "__main__":
     train_pairs_df = pd.read_csv(PATH_TO_TRAIN_PAIRS)
@@ -28,17 +28,8 @@ if __name__ == "__main__":
     checkpoint_file_path = "model.h5"
 
     model = keras.models.load_model(checkpoint_file_path)
-    model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
-        filepath=checkpoint_file_path,
-        save_weights_only=True,
-        mode='max',
-        save_best_only=True,
-        save_freq="epoch")
-
-    # The model weights (that are considered the best) are loaded into the model.
     model.load_weights(checkpoint_file_path)
     history = model.fit(train_generator,
                         epochs=EPOCHS,
-                        batch_size=BATCH_SIZE,
-                        callbacks=[model_checkpoint_callback])
+                        batch_size=BATCH_SIZE)
     model.save("model.h5")
